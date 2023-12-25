@@ -1,0 +1,335 @@
+openapi: 3.0.2
+info:
+  title: 'Messaging system'
+  version: ''
+paths:
+  /api/users/:
+    post:
+      operationId: Create account for user
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreate'
+          description: 'User is created'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+      tags:
+        - Users
+        
+  /api/messages/:
+    get:
+      operationId: Get all messages for a specific user
+      description: 'User can see messages which he send or he have to get. User also can get all unread messages using query parametrs'
+      parameters:
+        - name: unread
+          required: false
+          in: query
+          description: is message unread
+          schema:
+            type: integer
+            enum: [0 or 1]
+        - name: receiver
+          required: false
+          in: query
+          description: receiver of message
+          schema:
+            type: string
+            example: "user1234"
+      security:
+        - Token: [Bearer]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+          description: ''
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+      tags:
+        - Messages
+
+    
+    post:
+      operationId: Write a message
+      description: 'Logged user can write a message to exsisting user'
+      parameters: []
+      security:
+        - Token: [Bearer]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+          description: ''
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Messages
+
+  /api/messages/{id}/:
+    get:
+      operationId: Reading message
+      description: 'if receiver reads a message "unread" will be "False"'
+      security:
+        - Token: [Bearer]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "message id"
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: ''
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+      tags:
+        - Messages
+    delete:
+      operationId: Deleting message
+      description: 'Sender or receiver can delete message'
+      security:
+        - Token: [Bearer]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "message id"
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'No Content'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+      tags:
+        - Messages
+  
+  /api/users/me/:
+    get:
+      operationId: User's profile
+      description: ''
+      security:
+        - Token: [Bearer]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreate'
+          description: ''
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+      tags:
+        - Users
+
+  /api/jwt/create/:
+    post:
+      operationId: Get token
+      description: receiving token, authentication with password and username
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenCreate'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenGetResponse'
+          description: ''
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    description: 'Error description'
+                    example: "No active account found with the given credentials"
+                    type: string
+          description: ''
+      tags:
+        - Users
+components:
+  schemas:
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        sender:
+          type: string
+          description: 'sender username'
+          example: 'user1234'
+          readOnly: true
+        receiver: 
+          type: string
+          description: 'receiver username'
+          example: 'user1235'
+        message_text: 
+          type: string
+          description: 'Message text'
+          example: 'Hello. How are you?'
+        subject: 
+          type: string
+          description: 'subject'
+          example: 'hello'
+        creation_date: 
+          type: string
+          description: 'date'
+          example: "2023-12-25"
+          readOnly: true
+        unread:
+          type: boolean
+          description: 'Is message unread'
+          readOnly: true
+      required:
+        - receiver
+        - message_text
+        - subject
+
+    UserCreate:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: "Uniuqe username"
+          maxLength: 150
+          example: "user1234"
+        email:
+          type: string
+          description: "email"
+          maxLength: 100
+          example: "user1234@gmail.com"
+        password:
+          type: string
+          maxLength: 150
+          description: "Password (Minimum 8 characters)"
+          example: "Qwerty456"
+          writeOnly: true
+      required:
+        - username
+        - password
+
+    TokenCreate:
+      type: object
+      properties:
+        password:
+          type: string
+          example: "Qwerty456"
+        username:
+          type: string
+          example: "user1234"
+      required:
+        - password
+        - username
+        
+    TokenGetResponse:
+      type: object
+      properties:
+        refresh:
+          type: string
+          example: mVmcmVzaCIsImV4cCI6MTY4OTk0MDk0MywianRpIjoDJjYzkw
+        access:
+          type: string
+          example: djvhcmVzaCIsImV4cCI6MTY4OTk0MDk0MywianRpIjoDJjYzkw
+
+          
+    ValidationError:
+      description: Standard error from DRF validation 
+      type: object
+      properties:
+        field_name:
+          description: 'field name with errors'
+          example: [ 'This field is required.' ]
+          type: array
+          items:
+            type: string
+    
+    AuthenticationError:
+      description: Unauthorized user
+      type: object
+      properties:
+        detail:
+          description: ''
+          example: "Authentication credentials were not provided"
+          type: string
+
+    NotFound:
+      description: Object not found
+      type: object
+      properties:
+        detail:
+          description: 'Error description'
+          example: "Not found."
+          type: string
+
+  responses:
+    ValidationError:
+      description: 'DRF validation errors'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+
+    AuthenticationError:
+      description: Unauthorized user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthenticationError'
+
+    NotFound:
+      description: Object not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFound'
+
+  securitySchemes:
+    Token:
+      description: ''
+      type: http
+      scheme: token
