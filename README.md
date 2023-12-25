@@ -42,11 +42,11 @@ python manage.py runserver
 Enter to Django admin at http://127.0.0.1:8000/foradmin/
 
 ## API documentation
-See messaging_systemi/static/redoc.yaml or after running on localhost at http://127.0.0.1:8000/redoc/ (DEBUG = True)
+See *messaging_systemi/static/redoc.yaml* or after running on localhost at http://127.0.0.1:8000/redoc/ (DEBUG must be True)
 ### Request examples
 
 #### endpoints for all users
-- path: /api/users/ method: POST (create account for new user, required fields: username, password)
+- **path**: /api/users/ **method**: POST (create account for new user, required fields: username, password)
 - path: /api/jwt/create/ method: POST (get a Bearer token, required fields: username, password)
 
 #### endpoints only for logged user (need authorization with Bearer token)
