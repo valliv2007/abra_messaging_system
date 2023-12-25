@@ -51,7 +51,7 @@ See *messaging_system/static/redoc.yaml* or after running on localhost at http:/
 
 #### endpoints only for logged user (need authorization with Bearer token)
 - path: **/api/messages/** method: **GET** (User can see all messages in which he is the sender and the receiver)
-- path: **/api/messages/?unread=**1 method: **GET** (User can see only unread messages in which he is the sender and the receiver)
+- path: **/api/messages/?unread=1** method: **GET** (User can see only unread messages in which he is the sender and the receiver)
 - path: **/api/messages/?receiver=username** method: **GET** (User can see only messages which send to specified receiver. In query have to use username not id) User can combine two previos filters
 - path: **/api/messages/** method: **POST** (User can write a message to exsisting user. Required fields: receiver (username not id), message_text, subject)
 - path: **/api/messages/{id}/** method: **GET** (User can read a message. If the user is the receiver the field "unread" will be "False")
