@@ -30,3 +30,7 @@ class MessageViewSet(mixins.CreateModelMixin, mixins.DestroyModelMixin,
             message.unread = False
             message.save()
         return super().retrieve(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        """redefine create for current logged user"""
+        serializer.save(sender=self.request.user)
