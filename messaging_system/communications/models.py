@@ -12,6 +12,7 @@ class Message(models.Model):
     message_text = models.TextField('Message', blank=False)
     subject = models.CharField('Subject', blank=False, max_length=150)
     creation_date = models.DateField('Creation date', auto_now_add=True)
+    unread = models.BooleanField('Unread', blank=False, default=True)
 
     class Meta:
         verbose_name = 'Message'
