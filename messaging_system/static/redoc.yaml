@@ -137,24 +137,6 @@ paths:
           $ref: '#/components/responses/AuthenticationError'
       tags:
         - Messages
-  
-  /api/users/me/:
-    get:
-      operationId: User's profile
-      description: ''
-      security:
-        - Token: [Bearer]
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserCreate'
-          description: ''
-        '401':
-          $ref: '#/components/responses/AuthenticationError'
-      tags:
-        - Users
 
   /api/jwt/create/:
     post:
