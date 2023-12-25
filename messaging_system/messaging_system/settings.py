@@ -24,7 +24,8 @@ INSTALLED_APPS = [
     'communications.apps.CommunicationsConfig',
     'api.apps.ApiConfig',
     'rest_framework',
-    'djoser'
+    'djoser',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
